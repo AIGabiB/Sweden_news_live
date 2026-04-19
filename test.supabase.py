@@ -15,8 +15,6 @@ API_KEY = os.environ.get("API_KEY")
 URL = "https://apiverket.se/v1/police/events"
 HEADERS = {"Authorization": API_KEY} 
 
-DB_PATH = r"C:\Users\gabib\test_apiverket\events.db"
-
 
 response2 = requests.get(URL, headers=HEADERS,params={"limit":30})
 
