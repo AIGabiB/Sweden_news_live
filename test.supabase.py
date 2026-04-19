@@ -7,9 +7,9 @@ from supabase import create_client
 
 load_dotenv()
 
-url = os.getenv("SU_URL")
-key = os.getenv("SU_API_KEY")
-API_KEY = os.getenv("API_KEY")
+url = os.environ.get("SU_URL")
+key = os.environ.get("SU_API_KEY")
+API_KEY = os.environ.get("API_KEY")
 
 
 URL = "https://apiverket.se/v1/police/events"
