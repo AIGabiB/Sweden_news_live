@@ -38,7 +38,7 @@ def clean_data(df):
     df["location_city"] = np.where(
     ~split_col.str[-1].str.contains("län", na=False, case=False),
     split_col.str[-1].str.strip(),
-    None)
+    "")
 
     df = df.drop(columns=["name"])
 
