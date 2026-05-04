@@ -1,0 +1,29 @@
+name: ETL Pipeline to Supabase
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"  
+  workflow_dispatch:        
+
+jobs:
+  run-etl:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run ETL script
+        env:
+          SU_URL: ${{ secrets.SU_URL }}
+          SU_API_KEY: ${{ secrets.SU_API_KEY }}
+        run: python data/etl_pipeline.py
