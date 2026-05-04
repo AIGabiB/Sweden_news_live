@@ -26,4 +26,4 @@ jobs:
         env:
           SU_URL: ${{ secrets.SU_URL }}
           SU_API_KEY: ${{ secrets.SU_API_KEY }}
-        run: python data/etl_pipeline.py
+        run: python etl_pipeline.py
