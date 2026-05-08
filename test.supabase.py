@@ -25,6 +25,14 @@ supabase = create_client(url, key)
 
 df = pd.DataFrame(api_news)
 
+exclude_types = [
+    "Sammanfattning natt",
+    "Övrigt",
+    "Sammanfattning kväll och natt"
+]
+
+df = df[~df["type"].isin(exclude_types)]
+
 def clean_data(df):
     df["datetime"] = pd.to_datetime(df["datetime"], utc=True)
 
