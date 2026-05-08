@@ -48,9 +48,7 @@ def clean_data(df):
     split_col.str[-1].str.strip(),
     "")
 
-    df = df.drop(columns=["name"])
-
-    df = df.drop(columns=["datetime"])
+    df = df.drop(columns=["name","datetime","latitude","longitude","url"])
 
     return df
 
