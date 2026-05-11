@@ -64,64 +64,66 @@ supabase.table("cleaned_news").upsert(data_dict).execute() # upsert new news to 
 
 
 table = supabase.table("cleaned_news").select("*").is_("embedding",None).execute() # get rows where "embedding" is None, so I can embed it.
+
 df_table = pd.DataFrame(table.data) # converting from json to pandas Dataframe
 
-df_table["location_city"] = df_table["location_city"].replace(
-    ["None", "none", "", "NULL", None],
-    np.nan ) # some of the cells in location_city is EMPTY, so I replaced it with np.nan
+if not df_table.empty:
+    df_table["location_city"] = df_table["location_city"].replace(
+        ["None", "none", "", "NULL", None],
+        np.nan ) # some of the cells in location_city is EMPTY, so I replaced it with np.nan
 
-def build_text(row): # this function will be used to create embedding_text for each row
-    return f"""
-    datum: {row ["event_date_str"]}
-    stad: {row["location_city"] or 'okänd'}
-    region: {row["location_name"]}
-    typ: {row["type"]}
-    
-    sammanfattning: {row["summary"]}
-    """
+    def build_text(row): # this function will be used to create embedding_text for each row
+        return f"""
+        datum: {row ["event_date_str"]}
+        stad: {row["location_city"] or 'okänd'}
+        region: {row["location_name"]}
+        typ: {row["type"]}
+        
+        sammanfattning: {row["summary"]}
+        """
 
-df_table["embedding_text"] = df_table.apply(build_text, axis=1) # applying build_text for each row and save it in new column "embedding_text"
-
-
-
-def create_embedding (df_table,client,batch_size = 100): # creates embeddings from column "embedding_text" by model: text-embedding-3-small
-
-    embeddings = []
-
-    for i in range(0, len(df_table), batch_size):
-
-        batch = df_table["embedding_text"].iloc[i:i + batch_size].tolist()
-
-        response = client.embeddings.create(
-            input=batch,
-            model="text-embedding-3-small")
-
-        batch_embedding = [item.embedding for item in response.data]
-        embeddings.extend(batch_embedding) 
-
-    return embeddings 
+    df_table["embedding_text"] = df_table.apply(build_text, axis=1) # applying build_text for each row and save it in new column "embedding_text"
 
 
-df_table["embedding"] = create_embedding(df_table= df_table, client= client) # call the function create_embedding() to create embedding and save it in column "embedding"
+
+    def create_embedding (df_table,client,batch_size = 100): # creates embeddings from column "embedding_text" by model: text-embedding-3-small
+
+        embeddings = []
+
+        for i in range(0, len(df_table), batch_size):
+
+            batch = df_table["embedding_text"].iloc[i:i + batch_size].tolist()
+
+            response = client.embeddings.create(
+                input=batch,
+                model="text-embedding-3-small")
+
+            batch_embedding = [item.embedding for item in response.data]
+            embeddings.extend(batch_embedding) 
+
+        return embeddings 
 
 
-def upsert_embedding_to_supabase(df_table,supabase ,batch_size = 200): # upserts columns "embedding_text" and "embedding" to supabase table
-
-    for i in range(0, len(df_table), batch_size):
-
-        batch_df = df_table.iloc[i:i+batch_size]
-
-        data = [
-            {
-                "id": row["id"],
-                "embedding_text": row["embedding_text"],
-                "embedding": row["embedding"],
-                "location_city": None if pd.isna(row["location_city"]) else row["location_city"]
-            }
-            for _, row in batch_df.iterrows()
-        ]
-
-        supabase.table("cleaned_news").upsert(data).execute()
+    df_table["embedding"] = create_embedding(df_table= df_table, client= client) # call the function create_embedding() to create embedding and save it in column "embedding"
 
 
-upsert_embedding_to_supabase(df_table=df_table, supabase=supabase)
+    def upsert_embedding_to_supabase(df_table,supabase ,batch_size = 200): # upserts columns "embedding_text" and "embedding" to supabase table
+
+        for i in range(0, len(df_table), batch_size):
+
+            batch_df = df_table.iloc[i:i+batch_size]
+
+            data = [
+                {
+                    "id": row["id"],
+                    "embedding_text": row["embedding_text"],
+                    "embedding": row["embedding"],
+                    "location_city": None if pd.isna(row["location_city"]) else row["location_city"]
+                }
+                for _, row in batch_df.iterrows()
+            ]
+
+            supabase.table("cleaned_news").upsert(data).execute()
+
+
+    upsert_embedding_to_supabase(df_table=df_table, supabase=supabase)
