@@ -4,3 +4,4 @@ pandas
 python-dotenv
 supabase
 streamlit
+openai==2.35.0
