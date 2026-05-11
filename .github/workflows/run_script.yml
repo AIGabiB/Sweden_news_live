@@ -13,6 +13,7 @@ jobs:
       SU_URL: ${{ secrets.SU_URL }}
       SU_API_KEY: ${{ secrets.SU_API_KEY }}
       API_KEY: ${{ secrets.API_KEY }}
+      AI_KEY: ${{ secrets.AI_KEY }}
 
     steps:
       - name: Checkout repo
