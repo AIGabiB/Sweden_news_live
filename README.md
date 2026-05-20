@@ -60,7 +60,7 @@ The system uses an automated pipeline to collect and process Swedish police even
 ---
 
 
-## 🔐 Environment Variables
+## Environment Variables
 
 Create a `.env` file in the project root and add the following variables:
 
@@ -73,13 +73,13 @@ API_KEY=your_Apiverket_key
 
 ---
 
-## 🗄️ Database Design
+## Database Design
 
 The project uses multiple PostgreSQL functions and views built on top of the `cleaned_news` table to simplify analytics queries, filtering, and dashboard aggregation.The database schema, tables, and functions are managed in Supabase.
 
 ---
 
-## ⚙️ Setup
+## Setup
 
 Note: Database schema and SQL functions are managed in Supabase and are required for full functionality.
 SQL scripts for schema, views, and functions will be added in a future update.
@@ -99,7 +99,7 @@ streamlit run Home.py
 
 Messages flagged by the moderation system automatically trigger a database entry with `flagged = True` and a timestamp for monitoring and safety analysis.
 
-## 📸 App screenshots
+## App screenshots
 
 <p align="center">
   <img src="images/Dashboard_page.png" width="45%" />
