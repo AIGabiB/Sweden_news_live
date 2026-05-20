@@ -29,7 +29,7 @@ load_dotenv() # load .env file (contains multiple API KEYS)
 
 supabase = get_supabase() # connects to my supabase project
 
-API_KEY = st.secrets.get("OPENAI_KEY") or os.environ.get("OPENAI_KEY") # get my OPEN AI API KEY
+API_KEY = os.environ.get("OPENAI_KEY") or st.secrets.get("OPENAI_KEY") # get my OPEN AI API KEY
 
 client = OpenAI(api_key=API_KEY) # connects to OPENAI
 
@@ -94,7 +94,7 @@ REGLER FÖR SOURCES:
 - Om SOURCES är tomma eller irrelevanta: ge inget nyhetssvar
 
 SVARSGUIDE:
-- Skriv tydligt och inkludera alltid datum och tid
+- Skriv tydligt, naturligt och inkludera alltid datum och tid
 - Ingen extra analys utöver SOURCES
 - Inga rubriker eller etiketter (som "Datum:" eller "Plats:")
 - Separera olika nyheter med tom rad
@@ -122,7 +122,7 @@ def verify_text(text,client):
         return True
 
 @st.cache_data(ttl=300)
-def load_top_questions(): # shows top 3 most 3 asked questions by ALL USERS from table "user_questions", which is in supabase
+def load_top_questions(): # shows top 3 most 3 asked questions, manualy created. 
     return supabase.rpc("top_questions").execute().data
 
 with st.sidebar:
@@ -185,12 +185,6 @@ if message: # if there is a message
     if len(message) < 150:
 
         if verify_text(text=message,client=client): # return TRUE if question is verified, else FALSE
-                
-            if len(st.session_state.messages) <= 1:
-                supabase.table("user_questions").insert({
-                    "question":message.strip().lower()
-                }).execute() # inserts ONLY the first USER questions into tabel "user_questions", for the purpose of showing top question in the side bar
-
 
             with st.chat_message("user"):
                 st.write(message)
@@ -243,7 +237,7 @@ if message: # if there is a message
                 last_5_history = [system_promt] + rest_promts[-10:] # gets 10 last 10 messages, used as a "memory" for the model
 
                         
-                response = client.responses.create(
+                response2 = client.responses.create(
                 model="gpt-4o-mini",
                 stream=True,
                 max_output_tokens=350,
@@ -258,16 +252,15 @@ if message: # if there is a message
                     
                 
             with st.chat_message("assistant"):
-                model_output = st.write_stream(chunk.delta for chunk in response if chunk.type == "response.output_text.delta") # prints response output word by word
+                model_output = st.write_stream(chunk.delta for chunk in response2 if chunk.type == "response.output_text.delta") # prints response output word by word
             
-
-            supabase.table("log_all_questions").insert({"question":message.strip(), "model_answer":model_output}).execute() # inserts all questions into a log file
 
             st.session_state.messages.append({"role":"user","content":message}) # append USER content to messages storage
 
             st.session_state.messages.append({"role": "assistant", "content": model_output}) # append ASSISTANT content to messages storage
 
-        else: # if USER message is not verified, it will not be processed
+        else: # if USER message is not verified, it will not be processed and a warning will be sent to table "log_invalid_questions"
+            supabase.table("log_invalid_questions").insert({"flagged":True}).execute()
             st.error("Message not verified")
     else:
         st.error("Input is too long. Please shorten your message.")

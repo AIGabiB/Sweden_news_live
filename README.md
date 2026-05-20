@@ -95,6 +95,10 @@ streamlit run Home.py
 ```
 ---
 
+## LLM Query Logging
+
+Messages flagged by the moderation system automatically trigger a database entry with `flagged = True` and a timestamp for monitoring and safety analysis.
+
 ## 📸 App screenshots
 
 <p align="center">
