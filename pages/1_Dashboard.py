@@ -40,6 +40,9 @@ kpi = load_v_kpi_dashboard()
 
 delta = kpi["news_today"] - kpi["news_last_week"]
 
+with st.sidebar:
+    st.info("Historical data from April 19, 2024 to today. Updated continuously.")
+
 col1,col2,col3,col4 = st.columns(4)
 
 with col1: 
