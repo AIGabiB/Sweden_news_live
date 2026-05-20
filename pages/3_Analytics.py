@@ -8,7 +8,7 @@ st.set_page_config(layout="wide") # set page to wide
 st.markdown("""
 <style>
 html, body, [class*="css"]  {
-    font-size: 16px;
+    font-size: 14px;
 }
 .block-container {
     padding-top: 2.5rem;
