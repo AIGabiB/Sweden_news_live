@@ -69,7 +69,7 @@ with col1 :
 
     selected_dates = st.date_input(
         "Select interval",
-        value=(end_date - timedelta(days=29), end_date),
+        value=(end_date - timedelta(days=21), end_date),
         min_value=start_date,
         max_value=end_date)
 
