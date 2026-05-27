@@ -96,34 +96,47 @@ with col1 :
     else:
         st.info("Select both a start and end date in the calendar above.")
 
-with col2: 
+with col2:
+
     hour_count_today = load_v_hour_count_today()
 
-    hour_count_today_df = pd.DataFrame(hour_count_today)
+    if not hour_count_today:
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")
+        st.write("")        
+        st.markdown("**News by Hour (Today)**")
+        st.write("")
+        st.write("")
+        st.warning("No plot is shown here because the API is down right now")
+    else:
+        hour_count_today_df = pd.DataFrame(hour_count_today)
 
-    st.write("")
-    st.write("")
-    st.write("")
 
-    fig = px.bar(
-        hour_count_today_df, 
-        x='Hour of day', 
-        y='Total count', 
-        title='News by Hour (Today)',
-        color="Total count",
-        color_continuous_scale='Blues',
-        text_auto=True)
+        st.write("")
+        st.write("")
+        st.write("")
 
-    fig.update_layout(
-        height=300, 
-        margin=dict(l=20, r=20, t=60, b=0),
-        xaxis_title="Hour",
-        yaxis_title="Count",
-        title_font_size=15)
+        fig = px.bar(
+            hour_count_today_df, 
+            x='Hour of day', 
+            y='Total count', 
+            title='News by Hour (Today)',
+            color="Total count",
+            color_continuous_scale='Blues',
+            text_auto=True)
 
-    fig.update_coloraxes(showscale=False)
+        fig.update_layout(
+            height=300, 
+            margin=dict(l=20, r=20, t=60, b=0),
+            xaxis_title="Hour",
+            yaxis_title="Count",
+            title_font_size=15)
 
-    st.plotly_chart(fig)
+        fig.update_coloraxes(showscale=False)
+
+        st.plotly_chart(fig)
 
 
 top5_news = load_v_top5_news()
